@@ -192,7 +192,6 @@
 
     <script>
     let solution = [];
-    let puzzle = [];
 
     function shuffle(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -202,39 +201,30 @@
         return array;
     }
 
-    function isSafe(board, row, col, number) {
-
+    function isSafe(board, row, col, num) {
         for (let i = 0; i < 9; i++) {
-            if (board[row][i] === number) return false;
-            if (board[i][col] === number) return false;
-        }
+            if (board[row][i] === num) return false;
+            if (board[i][col] === num) return false;
 
-        const boxRow = Math.floor(row / 3) * 3;
-        const boxCol = Math.floor(col / 3) * 3;
+            const boxRow = 3 * Math.floor(row / 3) + Math.floor(i / 3);
+            const boxCol = 3 * Math.floor(col / 3) + (i % 3);
 
-        for (let r = boxRow; r < boxRow + 3; r++) {
-            for (let c = boxCol; c < boxCol + 3; c++) {
-                if (board[r][c] === number) return false;
-            }
+            if (board[boxRow][boxCol] === num) return false;
         }
 
         return true;
     }
 
     function solveSudoku(board) {
-
         for (let row = 0; row < 9; row++) {
             for (let col = 0; col < 9; col++) {
 
                 if (board[row][col] === 0) {
-
                     let numbers = shuffle([1,2,3,4,5,6,7,8,9]);
 
-                    for (let number of numbers) {
-
-                        if (isSafe(board, row, col, number)) {
-
-                            board[row][col] = number;
+                    for (let num of numbers) {
+                        if (isSafe(board, row, col, num)) {
+                            board[row][col] = num;
 
                             if (solveSudoku(board)) {
                                 return true;
@@ -253,70 +243,59 @@
     }
 
     function generatePuzzle() {
+        let board = Array.from({ length: 9 }, () => Array(9).fill(0));
 
-        solution = Array.from({ length: 9 }, () => Array(9).fill(0));
+        solveSudoku(board);
 
-        solveSudoku(solution);
+        solution = board.map(row => [...row]);
 
-        puzzle = solution.map(row => [...row]);
+        let puzzle = board.map(row => [...row]);
 
         let cellsToRemove = 45;
 
         while (cellsToRemove > 0) {
-
-            const row = Math.floor(Math.random() * 9);
-            const col = Math.floor(Math.random() * 9);
+            let row = Math.floor(Math.random() * 9);
+            let col = Math.floor(Math.random() * 9);
 
             if (puzzle[row][col] !== 0) {
                 puzzle[row][col] = 0;
                 cellsToRemove--;
             }
         }
+
+        return puzzle;
     }
 
     function createBoard() {
-
+        const puzzle = generatePuzzle();
         const board = document.getElementById("board");
 
         board.innerHTML = "";
 
         for (let row = 0; row < 9; row++) {
-
             for (let col = 0; col < 9; col++) {
 
                 const cell = document.createElement("div");
-
                 cell.className = "cell";
 
                 if (puzzle[row][col] !== 0) {
-
                     cell.textContent = puzzle[row][col];
-
                     cell.classList.add("given");
-
                 } else {
-
                     cell.contentEditable = true;
 
-                    cell.addEventListener("input", function() {
-
+                    cell.addEventListener("input", function () {
                         let value = cell.textContent.trim();
 
                         if (!/^[1-9]$/.test(value)) {
-
                             cell.textContent = "";
-                            cell.style.color = "";
-
                             return;
                         }
 
-                        if (Number(value) === solution[row][col]) {
-
-                            cell.style.color = "black";
-
-                        } else {
-
+                        if (Number(value) !== solution[row][col]) {
                             cell.style.color = "red";
+                        } else {
+                            cell.style.color = "";
                         }
                     });
                 }
@@ -327,13 +306,10 @@
     }
 
     function newGame() {
-
-        generatePuzzle();
-
         createBoard();
     }
 
-    newGame();
+    createBoard();
 </script>
 </body>
 </html>
