@@ -191,16 +191,47 @@
     </div>
 
     <script>
+    const solution = [
+        [5,3,4,6,7,8,9,1,2],
+        [6,7,2,1,9,5,3,4,8],
+        [1,9,8,3,4,2,5,6,7],
+        [8,5,9,7,6,1,4,2,3],
+        [4,2,6,8,5,3,7,9,1],
+        [7,1,3,9,2,4,8,5,6],
+        [9,6,1,5,3,7,2,8,4],
+        [2,8,7,4,1,9,6,3,5],
+        [3,4,5,2,8,6,1,7,9]
+    ];
+
     const cells = document.querySelectorAll(".cell:not(.given)");
 
     cells.forEach(function(cell) {
+
         cell.contentEditable = true;
 
         cell.addEventListener("input", function() {
+
             let value = cell.textContent.trim();
 
+            // Allow only one number from 1 to 9
             if (!/^[1-9]$/.test(value)) {
                 cell.textContent = "";
+                cell.style.color = "";
+                return;
+            }
+
+            // Find which cell this is
+            const allCells = Array.from(document.querySelectorAll(".cell"));
+            const index = allCells.indexOf(cell);
+
+            const row = Math.floor(index / 9);
+            const col = index % 9;
+
+            // Check the answer
+            if (Number(value) === solution[row][col]) {
+                cell.style.color = "black";
+            } else {
+                cell.style.color = "red";
             }
         });
     });
