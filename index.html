@@ -191,10 +191,23 @@
     </div>
 
     <script>
-        function newGame() {
-            alert("New Game will be added next.");
-        }
-    </script>
+    const cells = document.querySelectorAll(".cell:not(.given)");
 
+    cells.forEach(function(cell) {
+        cell.contentEditable = true;
+
+        cell.addEventListener("input", function() {
+            let value = cell.textContent.trim();
+
+            if (!/^[1-9]$/.test(value)) {
+                cell.textContent = "";
+            }
+        });
+    });
+
+    function newGame() {
+        alert("New Game will be added next.");
+    }
+</script>
 </body>
 </html>
