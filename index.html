@@ -321,6 +321,10 @@ if (difficulty === "easy") {
     function newGame() {
         createBoard();
     }
+   function setDifficulty(level) {
+    difficulty = level;
+    createBoard();
+}
 function checkPuzzle() {
     const cells = document.querySelectorAll(".cell");
 
