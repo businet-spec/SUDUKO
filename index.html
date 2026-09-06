@@ -341,6 +341,19 @@ function checkPuzzle() {
         alert("Congratulations! You solved the puzzle!");
     }
 }
+        function solvePuzzle() {
+    const cells = document.querySelectorAll(".cell");
+
+    cells.forEach(function(cell, index) {
+        const row = Math.floor(index / 9);
+        const col = index % 9;
+
+        if (!cell.classList.contains("given")) {
+            cell.textContent = solution[row][col];
+            cell.style.color = "";
+        }
+    });
+}
     createBoard();
 </script>
 </body>
