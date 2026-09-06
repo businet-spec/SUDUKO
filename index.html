@@ -308,7 +308,38 @@
     function newGame() {
         createBoard();
     }
+function checkPuzzle() {
+    const cells = document.querySelectorAll(".cell");
 
+    let mistakes = 0;
+    let empty = 0;
+
+    cells.forEach(function(cell, index) {
+        const row = Math.floor(index / 9);
+        const col = index % 9;
+
+        if (!cell.classList.contains("given")) {
+            const value = cell.textContent.trim();
+
+            if (value === "") {
+                empty++;
+            } else if (Number(value) !== solution[row][col]) {
+                cell.style.color = "red";
+                mistakes++;
+            } else {
+                cell.style.color = "";
+            }
+        }
+    });
+
+    if (mistakes > 0) {
+        alert("There are " + mistakes + " mistake(s).");
+    } else if (empty > 0) {
+        alert("So far, so good! There are " + empty + " empty cell(s) remaining.");
+    } else {
+        alert("Congratulations! You solved the puzzle!");
+    }
+}
     createBoard();
 </script>
 </body>
