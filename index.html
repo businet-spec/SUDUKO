@@ -196,6 +196,7 @@
 
     <script>
     let solution = [];
+        let difficulty = "medium";
 
     function shuffle(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -255,7 +256,15 @@
 
         let puzzle = board.map(row => [...row]);
 
-        let cellsToRemove = 45;
+        let cellsToRemove;
+
+if (difficulty === "easy") {
+    cellsToRemove = 35;
+} else if (difficulty === "hard") {
+    cellsToRemove = 55;
+} else {
+    cellsToRemove = 45;
+}
 
         while (cellsToRemove > 0) {
             let row = Math.floor(Math.random() * 9);
