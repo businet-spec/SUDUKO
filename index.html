@@ -383,7 +383,9 @@ noteGrid.style.color = "green";
 
 for (let n = 1; n <= 9; n++) {
     const note = document.createElement("div");
-
+    // Put every digit in its fixed Sudoku-note position
+    note.style.gridColumn = ((n - 1) % 3) + 1;
+    note.style.gridRow = Math.floor((n - 1) / 3) + 1;
     note.style.display = "flex";
     note.style.alignItems = "center";
     note.style.justifyContent = "center";
