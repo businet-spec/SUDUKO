@@ -331,18 +331,24 @@ cell.addEventListener("input", function () {
 
     if (notesMode) {
 
-        // Remove duplicate numbers and sort them
-        value = [...new Set(value.split(""))]
-            .sort()
-            .join("");
+    // Remove duplicate numbers and sort them
+    value = [...new Set(value.split(""))]
+        .sort()
+        .join("");
 
-        cell.textContent = value;
+    // Maximum 9 note digits
+    value = value.substring(0, 9);
 
-        // Make notes smaller
-        cell.style.fontSize = "12px";
-        cell.style.color = "gray";
+    // Show 3 digits per line
+    const lines = value.match(/.{1,3}/g) || [];
 
-    } else {
+    cell.innerHTML = lines.join("<br>");
+
+    // Make notes smaller
+    cell.style.fontSize = "11px";
+    cell.style.lineHeight = "11px";
+    cell.style.color = "gray";
+} else {
 
         // Final answer: keep only the last digit entered
         if (value.length > 0) {
