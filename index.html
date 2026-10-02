@@ -91,7 +91,22 @@
 </head>
 
 <body>
+<div id="authBox">
+    <h3>User Account</h3>
 
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+
+    <br><br>
+
+    <button onclick="createAccount()">Create Account</button>
+    <button onclick="loginUser()">Login</button>
+    <button onclick="logoutUser()">Logout</button>
+
+    <p id="userStatus">Not signed in</p>
+</div>
+
+<hr>
     <h1>Sudou Lahori</h1>
     <div id="timer">Time: 00:00</div>
     <button onclick="newGame()">New Game</button>
@@ -371,6 +386,69 @@ function checkPuzzle() {
     });
 }
     createBoard();
+</script>
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+
+    import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        signOut,
+        onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+    const firebaseConfig = {
+    apiKey: "AIzaSyBpMq35VF7TL5lK1N-4Nl1b-wYqpspKtX8",
+    authDomain: "sudoku-global-users.firebaseapp.com",
+    projectId: "sudoku-global-users",
+    appId: "1:564818365140:web:559059cc12a53e7eaf8941"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    window.createAccount = async function () {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        try {
+            await createUserWithEmailAndPassword(auth, email, password);
+            alert("Account created successfully.");
+        } catch (error) {
+            alert(error.message);
+        }
+    };
+
+    window.loginUser = async function () {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            alert("Login successful.");
+        } catch (error) {
+            alert(error.message);
+        }
+    };
+
+    window.logoutUser = async function () {
+        try {
+            await signOut(auth);
+        } catch (error) {
+            alert(error.message);
+        }
+    };
+
+    onAuthStateChanged(auth, (user) => {
+        const status = document.getElementById("userStatus");
+
+        if (user) {
+            status.textContent = "Signed in as: " + user.email;
+        } else {
+            status.textContent = "Not signed in";
+        }
+    });
 </script>
 </body>
 </html> 
