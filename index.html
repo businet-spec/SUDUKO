@@ -112,6 +112,7 @@
     <button onclick="newGame()">New Game</button>
     <button onclick="checkPuzzle()">Check Puzzle</button>
     <button onclick="solvePuzzle()">Solve Puzzle</button>
+    <button id="notesButton" onclick="toggleNotes()">Notes: OFF</button>
     <button onclick="setDifficulty('easy')">Easy</button>
     <button onclick="setDifficulty('medium')">Medium</button>
     <button onclick="setDifficulty('hard')">Hard</button>
@@ -212,6 +213,19 @@
     <script>
     let solution = [];
         let difficulty = "medium";
+        let notesMode = false;
+
+function toggleNotes() {
+    notesMode = !notesMode;
+
+    const button = document.getElementById("notesButton");
+
+    if (notesMode) {
+        button.textContent = "Notes: ON";
+    } else {
+        button.textContent = "Notes: OFF";
+    }
+}
 
     function shuffle(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -312,20 +326,40 @@ if (difficulty === "easy") {
                 } else {
                     cell.contentEditable = true;
 
-                    cell.addEventListener("input", function () {
-                        let value = cell.textContent.trim();
+cell.addEventListener("input", function () {
+    let value = cell.textContent.replace(/[^1-9]/g, "");
 
-                        if (!/^[1-9]$/.test(value)) {
-                            cell.textContent = "";
-                            return;
-                        }
+    if (notesMode) {
 
-                        if (Number(value) !== solution[row][col]) {
-                            cell.style.color = "red";
-                        } else {
-                            cell.style.color = "";
-                        }
-                    });
+        // Remove duplicate numbers and sort them
+        value = [...new Set(value.split(""))]
+            .sort()
+            .join("");
+
+        cell.textContent = value;
+
+        // Make notes smaller
+        cell.style.fontSize = "12px";
+        cell.style.color = "gray";
+
+    } else {
+
+        // Final answer: keep only the last digit entered
+        if (value.length > 0) {
+            value = value[value.length - 1];
+        }
+
+        cell.textContent = value;
+        cell.style.fontSize = "";
+        cell.style.color = "";
+
+        if (value !== "") {
+            if (Number(value) !== solution[row][col]) {
+                cell.style.color = "red";
+            }
+        }
+    }
+});
                 }
 
                 board.appendChild(cell);
