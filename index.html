@@ -327,6 +327,7 @@ if (difficulty === "easy") {
                     cell.contentEditable = true;
 
 cell.addEventListener("input", function () {
+    if (notesMode) return;
     let value = cell.textContent.replace(/[^1-9]/g, "");
 
     if (notesMode) {
