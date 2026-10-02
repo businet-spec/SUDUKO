@@ -94,8 +94,9 @@
 <div id="authBox">
     <h3>User Account</h3>
 
+    <input type="text" id="userId" placeholder="User ID">
     <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
+    <input type="password" id="password" placeholder="Password">  
 
     <br><br>
 
@@ -519,16 +520,51 @@ function checkPuzzle() {
     const db = getFirestore(app);
 
     window.createAccount = async function () {
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
+    const userId = document.getElementById("userId").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
 
-        try {
-            await createUserWithEmailAndPassword(auth, email, password);
-            alert("Account created successfully.");
-        } catch (error) {
-            alert(error.message);
+    if (userId === "") {
+        alert("Please enter a User ID.");
+        return;
+    }
+
+    const normalizedUserId = userId.toLowerCase();
+
+    try {
+        const usernameRef = doc(db, "usernames", normalizedUserId);
+        const usernameSnap = await getDoc(usernameRef);
+
+        if (usernameSnap.exists()) {
+            alert("That User ID is already taken. Please choose another one.");
+            return;
         }
-    };
+
+        const result = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
+
+        // Reserve the unique User ID.
+        await setDoc(usernameRef, {
+            uid: result.user.uid
+        });
+
+        // Private user profile.
+        await setDoc(doc(db, "users", result.user.uid), {
+            userId: userId,
+            normalizedUserId: normalizedUserId,
+            email: email,
+            createdAt: serverTimestamp()
+        }, { merge: true });
+
+        alert("Account created successfully!");
+
+    } catch (error) {
+        alert(error.message);
+    }
+};
 
     window.loginUser = async function () {
         const email = document.getElementById("email").value;
