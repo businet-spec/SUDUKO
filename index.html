@@ -369,8 +369,9 @@ function checkPuzzle() {
     } else if (empty > 0) {
         alert("So far, so good! There are " + empty + " empty cell(s) remaining.");
     } else {
-        alert("Congratulations! You solved the puzzle!");
-    }
+    alert("Congratulations! You solved the puzzle!");
+    saveGameStats();
+}
 }
         function solvePuzzle() {
     const cells = document.querySelectorAll(".cell");
@@ -397,6 +398,15 @@ function checkPuzzle() {
         signOut,
         onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+        import {
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc,
+    updateDoc,
+    increment,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
     const firebaseConfig = {
     apiKey: "AIzaSyBpMq35VF7TL5lK1N-4Nl1b-wYqpspKtX8",
@@ -407,6 +417,7 @@ function checkPuzzle() {
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
     window.createAccount = async function () {
         const email = document.getElementById("email").value;
@@ -439,7 +450,29 @@ function checkPuzzle() {
             alert(error.message);
         }
     };
+window.saveGameStats = async function () {
+    const user = auth.currentUser;
 
+    if (!user) {
+        alert("Please sign in to save your statistics.");
+        return;
+    }
+
+    try {
+        const userRef = doc(db, "users", user.uid);
+
+        await setDoc(userRef, {
+            email: user.email,
+            puzzlesSolved: increment(1),
+            lastPlayed: serverTimestamp()
+        }, { merge: true });
+
+        console.log("Game statistics saved.");
+    } catch (error) {
+        console.error("Error saving statistics:", error);
+        alert("The puzzle was solved, but the statistics could not be saved.");
+    }
+};
     onAuthStateChanged(auth, (user) => {
         const status = document.getElementById("userStatus");
 
