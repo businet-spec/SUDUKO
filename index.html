@@ -342,40 +342,51 @@ cell.addEventListener("keydown", function (event) {
 
     if (notesMode) {
 
-        let existing = cell.textContent.replace(/[^1-9]/g, "");
+    // Keep the notes stored separately from what is displayed
+    let existing =
+        cell.dataset.notes ||
+        cell.textContent.replace(/[^1-9]/g, "");
 
-        // Backspace or Delete clears all notes
-        if (key === "Backspace" || key === "Delete") {
-            existing = "";
+    if (key === "Backspace" || key === "Delete") {
+
+        existing = "";
+
+    } else if (/^[1-9]$/.test(key)) {
+
+        // If the digit is already a note, remove it
+        if (existing.includes(key)) {
+            existing = existing.replace(key, "");
         } else {
-
-            // Press a note digit again to remove it
-            if (existing.includes(key)) {
-                existing = existing.replace(key, "");
-            } else {
-                existing += key;
-            }
+            // Otherwise add it
+            existing += key;
         }
+    }
 
-        // Sort the notes
-        existing = [...new Set(existing.split(""))]
-            .sort()
-            .join("");
+    // Remove duplicates and sort
+    existing = [...new Set(existing.split(""))]
+        .sort()
+        .join("");
 
-        // Three digits per line with spaces
-        const groups = existing.match(/.{1,3}/g) || [];
-        const lines = groups.map(group =>
-            group.split("").join(" ")
-        );
+    // Remember the notes
+    cell.dataset.notes = existing;
 
-        cell.innerHTML = lines.join("<br>");
+    // Display 3 notes per line with spaces
+    const groups = existing.match(/.{1,3}/g) || [];
+    const lines = groups.map(group =>
+        group.split("").join(" ")
+    );
 
-        cell.style.fontSize = "11px";
-        cell.style.lineHeight = "13px";
-        cell.style.color = "green";
+    cell.innerHTML = lines.join("<br>");
 
-    } else {
+    cell.style.fontSize = "11px";
+    cell.style.lineHeight = "13px";
+    cell.style.color = "green";
 
+    // Keep keyboard focus in this cell
+    cell.focus();
+
+} else { 
+cell.dataset.notes = "";
         // FINAL ANSWER MODE
         if (key === "Backspace" || key === "Delete") {
             cell.textContent = "";
