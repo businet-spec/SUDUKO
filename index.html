@@ -370,17 +370,35 @@ cell.addEventListener("keydown", function (event) {
     // Remember the notes
     cell.dataset.notes = existing;
 
-    // Display 3 notes per line with spaces
-    const groups = existing.match(/.{1,3}/g) || [];
-    const lines = groups.map(group =>
-        group.split("").join(" ")
-    );
+   // Display notes in a 3x3 grid
+    const noteGrid = document.createElement("div");
+noteGrid.style.display = "grid";
+noteGrid.style.gridTemplateColumns = "repeat(3, 1fr)";
+noteGrid.style.gridTemplateRows = "repeat(3, 1fr)";
+noteGrid.style.width = "100%";
+noteGrid.style.height = "100%";
+noteGrid.style.fontSize = "10px";
+noteGrid.style.lineHeight = "1";
+noteGrid.style.color = "green";
 
-    cell.innerHTML = lines.join("<br>");
+for (let n = 1; n <= 9; n++) {
+    const note = document.createElement("div");
 
-    cell.style.fontSize = "11px";
-    cell.style.lineHeight = "13px";
-    cell.style.color = "green";
+    note.style.display = "flex";
+    note.style.alignItems = "center";
+    note.style.justifyContent = "center";
+
+    if (existing.includes(String(n))) {
+        note.textContent = n;
+    } else {
+        note.textContent = "";
+    }
+
+    noteGrid.appendChild(note);
+}
+
+cell.innerHTML = "";
+cell.appendChild(noteGrid);
 
     // Keep keyboard focus in this cell
     cell.focus();
