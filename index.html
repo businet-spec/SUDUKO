@@ -340,14 +340,15 @@ cell.addEventListener("input", function () {
     value = value.substring(0, 9);
 
     // Show 3 digits per line
-    const lines = value.match(/.{1,3}/g) || [];
+    const groups = value.match(/.{1,3}/g) || [];
+    const lines = groups.map(group => group.split("").join(" "));
 
-    cell.innerHTML = lines.join("<br>");
+cell.innerHTML = lines.join("<br>");
 
     // Make notes smaller
     cell.style.fontSize = "11px";
     cell.style.lineHeight = "11px";
-    cell.style.color = "gray";
+    cell.style.color = "green";
 } else {
 
         // Final answer: keep only the last digit entered
