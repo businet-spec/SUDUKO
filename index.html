@@ -326,65 +326,75 @@ if (difficulty === "easy") {
                 } else {
                     cell.contentEditable = true;
 
-cell.addEventListener("input", function () {
-    if (notesMode) return;
-    let value = cell.textContent.replace(/[^1-9]/g, "");
+cell.addEventListener("keydown", function (event) {
 
-    if (notesMode) {
+    const key = event.key;
 
-    if (notesMode) {
-
-    // Keep only digits 1-9
-    let typed = value.replace(/[^1-9]/g, "");
-
-    // Get the last digit typed
-    const newDigit = typed.slice(-1);
-
-    // Read the existing notes already in the cell
-    let existing = cell.textContent.replace(/[^1-9]/g, "");
-
-    // If the digit already exists, remove it.
-    // Otherwise, add it.
-    if (existing.includes(newDigit)) {
-        existing = existing.replace(newDigit, "");
-    } else {
-        existing += newDigit;
+    // Only handle 1-9, Backspace, and Delete
+    if (!/^[1-9]$/.test(key) &&
+        key !== "Backspace" &&
+        key !== "Delete") {
+        return;
     }
 
-    // Remove duplicates and sort
-    existing = [...new Set(existing.split(""))]
-        .sort()
-        .join("");
+    // Stop the browser from inserting the character itself
+    event.preventDefault();
 
-    // Show 3 digits per line with spaces
-    const groups = existing.match(/.{1,3}/g) || [];
-    const lines = groups.map(group => group.split("").join(" "));
+    if (notesMode) {
 
-    cell.innerHTML = lines.join("<br>");
+        let existing = cell.textContent.replace(/[^1-9]/g, "");
 
-    cell.style.fontSize = "11px";
-    cell.style.lineHeight = "11px";
-    cell.style.color = "green";
+        // Backspace or Delete clears all notes
+        if (key === "Backspace" || key === "Delete") {
+            existing = "";
+        } else {
 
-} else {
-
-        // Final answer: keep only the last digit entered
-        if (value.length > 0) {
-            value = value[value.length - 1];
-        }
-
-        cell.textContent = value;
-        cell.style.fontSize = "";
-        cell.style.color = "";
-
-        if (value !== "") {
-            if (Number(value) !== solution[row][col]) {
-                cell.style.color = "red";
+            // Press a note digit again to remove it
+            if (existing.includes(key)) {
+                existing = existing.replace(key, "");
+            } else {
+                existing += key;
             }
         }
+
+        // Sort the notes
+        existing = [...new Set(existing.split(""))]
+            .sort()
+            .join("");
+
+        // Three digits per line with spaces
+        const groups = existing.match(/.{1,3}/g) || [];
+        const lines = groups.map(group =>
+            group.split("").join(" ")
+        );
+
+        cell.innerHTML = lines.join("<br>");
+
+        cell.style.fontSize = "11px";
+        cell.style.lineHeight = "13px";
+        cell.style.color = "green";
+
+    } else {
+
+        // FINAL ANSWER MODE
+        if (key === "Backspace" || key === "Delete") {
+            cell.textContent = "";
+            cell.style.color = "";
+            cell.style.fontSize = "";
+            cell.style.lineHeight = "";
+            return;
+        }
+
+        cell.textContent = key;
+        cell.style.fontSize = "";
+        cell.style.lineHeight = "";
+        cell.style.color = "";
+
+        if (Number(key) !== solution[row][col]) {
+            cell.style.color = "red";
+        }
     }
-});
-                }
+});                }
 
                 board.appendChild(cell);
             }
