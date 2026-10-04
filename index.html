@@ -499,14 +499,18 @@ function checkPuzzle() {
         signOut,
         onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-        import {
+   import {
     getFirestore,
     doc,
     setDoc,
     getDoc,
     updateDoc,
     increment,
-    serverTimestamp
+    serverTimestamp,
+    collection,
+    query,
+    where,
+    getDocs
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -611,7 +615,32 @@ function checkPuzzle() {
         alert(error.message);
     }
 };
+        
+window.forgotUserId = async function () {
+    const email = prompt("Enter the email address you used when you registered:");
 
+    if (!email) {
+        return;
+    }
+
+    try {
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("email", "==", email.trim()));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            alert("No account was found with that email address.");
+            return;
+        }
+
+        const userData = querySnapshot.docs[0].data();
+
+        alert("Your User ID is: " + userData.userId);
+
+    } catch (error) {
+        alert(error.message);
+    }
+};
     window.logoutUser = async function () {
         try {
             await signOut(auth);
