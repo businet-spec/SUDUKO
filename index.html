@@ -566,17 +566,50 @@ function checkPuzzle() {
     }
 };
 
-    window.loginUser = async function () {
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
+   window.loginUser = async function () {
+    const userId = document.getElementById("userId").value.trim();
+    const password = document.getElementById("password").value;
 
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-            alert("Login successful.");
-        } catch (error) {
-            alert(error.message);
+    if (userId === "") {
+        alert("Please enter your User ID.");
+        return;
+    }
+
+    if (password === "") {
+        alert("Please enter your password.");
+        return;
+    }
+
+    const normalizedUserId = userId.toLowerCase();
+
+    try {
+        const usernameRef = doc(db, "usernames", normalizedUserId);
+        const usernameSnap = await getDoc(usernameRef);
+
+        if (!usernameSnap.exists()) {
+            alert("User ID not found.");
+            return;
         }
-    };
+
+        const uid = usernameSnap.data().uid;
+
+        const userRef = doc(db, "users", uid);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+            alert("User account not found.");
+            return;
+        }
+
+        const email = userSnap.data().email;
+
+        await signInWithEmailAndPassword(auth, email, password);
+
+        alert("Login successful.");
+    } catch (error) {
+        alert(error.message);
+    }
+};
 
     window.logoutUser = async function () {
         try {
