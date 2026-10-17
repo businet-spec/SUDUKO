@@ -220,7 +220,7 @@
         let difficulty = "medium";
         let notesMode = false;
         let puzzleCounted = false;
-function toggleNotes() {
+window.toggleNotes = function () {
     notesMode = !notesMode;
 
     const button = document.getElementById("notesButton");
@@ -438,14 +438,14 @@ cell.dataset.notes = "";
         }
     }
 
-    function newGame() {
+   window.newGame = function () {
         createBoard();
     }
-   function setDifficulty(level) {
+   window.setDifficulty = function (level) {
     difficulty = level;
     createBoard();
 }
-function checkPuzzle() {
+window.checkPuzzle = function () {
     const cells = document.querySelectorAll(".cell");
 
     let mistakes = 0;
@@ -484,7 +484,7 @@ function checkPuzzle() {
 }
 }
 }
-        function solvePuzzle() {
+      window.solvePuzzle = function () {
     const cells = document.querySelectorAll(".cell");
 
     cells.forEach(function(cell, index) {
