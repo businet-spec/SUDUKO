@@ -334,13 +334,16 @@ if (difficulty === "easy") {
 
                 const cell = document.createElement("div");
                 cell.className = "cell";
-
+                cell.addEventListener("click", function () {
+            if (document.getElementById("board").classList.contains("locked")) {
+            alert("Please log in or register to play the game.");
+    }
+});
                 if (puzzle[row][col] !== 0) {
                     cell.textContent = puzzle[row][col];
                     cell.classList.add("given");
                 } else {
                     cell.contentEditable = !document.getElementById("board").classList.contains("locked");
-
 cell.addEventListener("keydown", function (event) {
 if (document.getElementById("board").classList.contains("locked")) {
     event.preventDefault();
