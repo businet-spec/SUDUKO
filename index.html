@@ -87,6 +87,11 @@
                 font-size: 18px;
             }
         }
+        /* Grey out Sudoku until the player logs in */
+    #board.locked {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
     </style>
 </head>
 
@@ -121,7 +126,7 @@
     <button onclick="setDifficulty('easy')">Easy</button>
     <button onclick="setDifficulty('medium')">Medium</button>
     <button onclick="setDifficulty('hard')">Hard</button>
-    <div id="board">
+    <div id="board" class="locked">
 
         <div class="cell given">5</div>
         <div class="cell given">3</div>
@@ -221,6 +226,10 @@
         let notesMode = false;
         let puzzleCounted = false;
 window.toggleNotes = function () {
+    if (document.getElementById("board").classList.contains("locked")) {
+    alert("Please log in or register to play the game.");
+    return;
+}
     notesMode = !notesMode;
 
     const button = document.getElementById("notesButton");
@@ -330,10 +339,14 @@ if (difficulty === "easy") {
                     cell.textContent = puzzle[row][col];
                     cell.classList.add("given");
                 } else {
-                    cell.contentEditable = true;
+                    cell.contentEditable = !document.getElementById("board").classList.contains("locked");
 
 cell.addEventListener("keydown", function (event) {
-
+if (document.getElementById("board").classList.contains("locked")) {
+    event.preventDefault();
+    alert("Please log in or register to play the game.");
+    return;
+}
     const key = event.key;
 
     // Only handle 1-9, Backspace, and Delete
@@ -439,13 +452,25 @@ cell.dataset.notes = "";
     }
 
    window.newGame = function () {
+    if (document.getElementById("board").classList.contains("locked")) {
+        alert("Please log in or register to play the game.");
+    return;
+}
         createBoard();
     }
    window.setDifficulty = function (level) {
+       if (document.getElementById("board").classList.contains("locked")) {
+    alert("Please log in or register to play the game.");
+    return;
+}
     difficulty = level;
     createBoard();
 }
 window.checkPuzzle = function () {
+    if (document.getElementById("board").classList.contains("locked")) {
+    alert("Please log in or register to play the game.");
+    return;
+}
     const cells = document.querySelectorAll(".cell");
 
     let mistakes = 0;
@@ -484,6 +509,10 @@ window.checkPuzzle = function () {
 }
 }
       window.solvePuzzle = function () {
+    if (document.getElementById("board").classList.contains("locked")) {
+    alert("Please log in or register to play the game.");
+    return;
+}
     const cells = document.querySelectorAll(".cell");
 
     cells.forEach(function(cell, index) {
@@ -647,7 +676,11 @@ window.saveGameStats = async function () {
 };
     onAuthStateChanged(auth, async (user) => {
         const status = document.getElementById("userStatus");
-
+        const board = document.getElementById("board");
+        board.classList.toggle("locked", !user);
+        board.querySelectorAll(".cell:not(.given)").forEach(function (cell) {
+        cell.contentEditable = !!user;
+});
         if (user) {
             const userRef = doc(db, "users", user.uid);
 const userSnap = await getDoc(userRef);
