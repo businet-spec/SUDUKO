@@ -93,13 +93,13 @@
 <body>
 <div id="authBox">
     <h3>User Account</h3>
-
+<p>New players: Register with User ID, email, and password. Existing players: Log in with User ID and password only.</p>
     <input type="text" id="userId" placeholder="User ID">
-    <button onclick="forgotUserId()">Forgot User ID?</button>
+    <!-- <button onclick="forgotUserId()">Forgot User ID?</button> -->
 
     <br><br>
 
-    <input type="email" id="email" placeholder="Email">
+    <input type="email" id="email" placeholder="Email (registration only)">
     <input type="password" id="password" placeholder="Password">
 
     <br><br>
@@ -500,7 +500,8 @@ function checkPuzzle() {
         createUserWithEmailAndPassword,
         signInWithEmailAndPassword,
         signOut,
-        onAuthStateChanged
+        onAuthStateChanged,
+        signInWithCustomToken
     } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
    import {
     getFirestore,
@@ -515,7 +516,10 @@ function checkPuzzle() {
     where,
     getDocs
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
-
+import {
+  getFunctions,
+  httpsCallable
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-functions.js";
     const firebaseConfig = {
     apiKey: "AIzaSyBpMq35VF7TL5lK1N-4Nl1b-wYqpspKtX8",
     authDomain: "sudoku-global-users.firebaseapp.com",
@@ -526,99 +530,55 @@ function checkPuzzle() {
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const functions = getFunctions(app, "us-central1");
+    const registerSudokuAccount = httpsCallable(functions, "registerSudokuAccount");
+    const loginSudokuUser = httpsCallable(functions, "loginSudokuUser");
+window.createAccount = async function () {
+  const userId = document.getElementById("userId").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
-    window.createAccount = async function () {
-    const userId = document.getElementById("userId").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
+  if (!userId || !email || !password) {
+    alert("Please enter your User ID, email, and password.");
+    return;
+  }
 
-    if (userId === "") {
-        alert("Please enter a User ID.");
-        return;
-    }
+  try {
+    const result = await registerSudokuAccount({
+      userId,
+      email,
+      password
+    });
 
-    const normalizedUserId = userId.toLowerCase();
+    await signInWithCustomToken(auth, result.data.token);
 
-    try {
-        const usernameRef = doc(db, "usernames", normalizedUserId);
-        const usernameSnap = await getDoc(usernameRef);
-
-        if (usernameSnap.exists()) {
-            alert("That User ID is already taken. Please choose another one.");
-            return;
-        }
-
-        const result = await createUserWithEmailAndPassword(
-            auth,
-            email,
-            password
-        );
-
-        // Reserve the unique User ID.
-        await setDoc(usernameRef, {
-            uid: result.user.uid
-        });
-
-        // Private user profile.
-        await setDoc(doc(db, "users", result.user.uid), {
-            userId: userId,
-            normalizedUserId: normalizedUserId,
-            email: email,
-            createdAt: serverTimestamp()
-        }, { merge: true });
-
-        alert("Account created successfully!");
-
-    } catch (error) {
-        alert(error.message);
-    }
+    alert("Account created successfully!");
+  } catch (error) {
+    alert(error.message);
+  }
 };
+window.loginUser = async function () {
+  const userId = document.getElementById("userId").value.trim();
+  const password = document.getElementById("password").value;
 
-   window.loginUser = async function () {
-    const userId = document.getElementById("userId").value.trim();
-    const password = document.getElementById("password").value;
+  if (!userId || !password) {
+    alert("Please enter your User ID and password.");
+    return;
+  }
 
-    if (userId === "") {
-        alert("Please enter your User ID.");
-        return;
-    }
+  try {
+    const result = await loginSudokuUser({
+      userId,
+      password
+    });
 
-    if (password === "") {
-        alert("Please enter your password.");
-        return;
-    }
+    await signInWithCustomToken(auth, result.data.token);
 
-    const normalizedUserId = userId.toLowerCase();
-
-    try {
-        const usernameRef = doc(db, "usernames", normalizedUserId);
-        const usernameSnap = await getDoc(usernameRef);
-
-        if (!usernameSnap.exists()) {
-            alert("User ID not found.");
-            return;
-        }
-
-        const uid = usernameSnap.data().uid;
-
-        const userRef = doc(db, "users", uid);
-        const userSnap = await getDoc(userRef);
-
-        if (!userSnap.exists()) {
-            alert("User account not found.");
-            return;
-        }
-
-        const email = userSnap.data().email;
-
-        await signInWithEmailAndPassword(auth, email, password);
-
-        alert("Login successful.");
-    } catch (error) {
-        alert(error.message);
-    }
-};
-        
+    alert("Login successful!");
+  } catch (error) {
+    alert(error.message);
+  }
+};        
 window.forgotUserId = async function () {
     const email = prompt("Enter the email address you used when you registered:");
 
@@ -662,11 +622,10 @@ window.saveGameStats = async function () {
     try {
         const userRef = doc(db, "users", user.uid);
 
-        await setDoc(userRef, {
-            email: user.email,
-            puzzlesSolved: increment(1),
-            lastPlayed: serverTimestamp()
-        }, { merge: true });
+ await updateDoc(userRef, {
+  puzzlesSolved: increment(1),
+  lastPlayed: serverTimestamp()
+});
 
         console.log("Game statistics saved.");
     } catch (error) {
@@ -674,11 +633,16 @@ window.saveGameStats = async function () {
         alert("The puzzle was solved, but the statistics could not be saved.");
     }
 };
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
         const status = document.getElementById("userStatus");
 
         if (user) {
-            status.textContent = "Signed in as: " + user.email;
+            const userRef = doc(db, "users", user.uid);
+const userSnap = await getDoc(userRef);
+
+status.textContent = userSnap.exists()
+  ? "Signed in as: " + userSnap.data().userId
+  : "Signed in";
         } else {
             status.textContent = "Not signed in";
         }
