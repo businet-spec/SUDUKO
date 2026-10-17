@@ -219,7 +219,7 @@
     let solution = [];
         let difficulty = "medium";
         let notesMode = false;
-
+        let puzzleCounted = false;
 function toggleNotes() {
     notesMode = !notesMode;
 
@@ -314,6 +314,7 @@ if (difficulty === "easy") {
     }
 
     function createBoard() {
+        puzzleCounted = false;
         const puzzle = generatePuzzle();
         const board = document.getElementById("board");
 
@@ -472,9 +473,15 @@ function checkPuzzle() {
         alert("There are " + mistakes + " mistake(s).");
     } else if (empty > 0) {
         alert("So far, so good! There are " + empty + " empty cell(s) remaining.");
+} else {
+    if (!puzzleCounted) {
+        puzzleCounted = true;
+        alert("Congratulations! You solved the puzzle!");
+        saveGameStats();
     } else {
-    alert("Congratulations! You solved the puzzle!");
-    saveGameStats();
+        alert("You have already completed this puzzle!");
+    }
+}
 }
 }
         function solvePuzzle() {
