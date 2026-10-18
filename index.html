@@ -499,10 +499,32 @@ if (key === "Backspace" || key === "Delete") {
     }
 });                }
 
-                board.appendChild(cell);
-            }
+                           board.appendChild(cell);
         }
     }
+
+    if (savedGame) {
+        const cells = board.querySelectorAll(".cell");
+
+        cells.forEach(function (cell, index) {
+            if (cell.classList.contains("given")) return;
+
+            const entry = savedGame.entries[index] || "";
+            const notes = savedGame.notes[index] || "";
+
+            if (entry) {
+                cell.textContent = entry;
+                cell.style.color =
+                    Number(entry) === solution[Math.floor(index / 9)][index % 9]
+                    ? ""
+                    : "red";
+            } else if (notes) {
+                cell.dataset.notes = notes;
+                cell.textContent = notes;
+            }
+        });
+    }
+}
 
     function removeMatchingNotes(row, col, number) {
     const cells = document.querySelectorAll("#board .cell");
