@@ -780,6 +780,9 @@ window.saveGameStats = async function () {
         if (user) {
             const userRef = doc(db, "users", user.uid);
 const userSnap = await getDoc(userRef);
+if (userSnap.exists() && userSnap.data().unfinishedGame) {
+    console.log("Unfinished puzzle found in Firebase.");
+}
 
 status.textContent = userSnap.exists()
   ? "Signed in as: " + userSnap.data().userId
