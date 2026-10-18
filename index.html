@@ -222,6 +222,20 @@
 
     <script>
     let solution = [];
+        let originalPuzzle = [];
+        let saveTimer = null;
+        let currentPlayerId = null;
+        function scheduleGameSave() {
+    if (!currentPlayerId || puzzleCounted) {
+        return;
+    }
+
+    clearTimeout(saveTimer);
+
+    saveTimer = setTimeout(function () {
+        window.saveUnfinishedGame();
+    }, 1500);
+}
         let difficulty = "medium";
         let notesMode = false;
         let activeSudokuCell = null;
@@ -325,10 +339,25 @@ if (difficulty === "easy") {
 
         return puzzle;
     }
+    window.collectGameProgress = function () {
+    const cells = document.querySelectorAll("#board .cell");
 
+    return {
+        originalPuzzle: originalPuzzle,
+        solution: solution,
+        difficulty: difficulty,
+        entries: Array.from(cells, cell =>
+    cell.classList.contains("given") ? "" :
+    (cell.querySelector(":scope > div > div") ? "" : cell.textContent.trim())
+),
+        notes: Array.from(cells, cell => cell.dataset.notes || ""),
+        savedAt: Date.now()
+    };
+}
     function createBoard() {
         puzzleCounted = false;
         const puzzle = generatePuzzle();
+        originalPuzzle = puzzle.map(row => [...row]);
         const board = document.getElementById("board");
 
         board.innerHTML = "";
@@ -398,6 +427,7 @@ if (document.getElementById("board").classList.contains("locked")) {
 
     // Remember the notes
     cell.dataset.notes = existing;
+    scheduleGameSave();
 
    // Display notes in a 3x3 grid
     const noteGrid = document.createElement("div");
@@ -437,15 +467,17 @@ cell.appendChild(noteGrid);
 } else { 
 cell.dataset.notes = "";
         // FINAL ANSWER MODE
-        if (key === "Backspace" || key === "Delete") {
-            cell.textContent = "";
-            cell.style.color = "";
-            cell.style.fontSize = "";
-            cell.style.lineHeight = "";
-            return;
-        }
-
+if (key === "Backspace" || key === "Delete") {
+    cell.textContent = "";
+    cell.style.color = "";
+    cell.style.fontSize = "";
+    cell.style.lineHeight = "";
+    scheduleGameSave();
+    return;
+}
+    
         cell.textContent = key;
+        scheduleGameSave();
         cell.style.fontSize = "";
         cell.style.lineHeight = "";
         cell.style.color = "";
@@ -695,6 +727,26 @@ window.forgotUserId = async function () {
             alert(error.message);
         }
     };
+window.saveUnfinishedGame = async function () {
+    const user = auth.currentUser;
+
+    if (!user) {
+        return;
+    }
+
+    try {
+        const progress = window.collectGameProgress();
+        const userRef = doc(db, "users", user.uid);
+
+        await updateDoc(userRef, {
+            unfinishedGame: progress
+        });
+
+        console.log("Unfinished puzzle saved.");
+    } catch (error) {
+        console.error("Error saving unfinished puzzle:", error);
+    }
+};
 window.saveGameStats = async function () {
     const user = auth.currentUser;
 
@@ -718,6 +770,7 @@ window.saveGameStats = async function () {
     }
 };
     onAuthStateChanged(auth, async (user) => {
+        currentPlayerId = user ? user.uid : null;
         const status = document.getElementById("userStatus");
         const board = document.getElementById("board");
         board.classList.toggle("locked", !user);
