@@ -484,8 +484,8 @@ cell.dataset.notes = "";
                 cell.dataset.notes = updated;
 
                 const noteBoxes = cell.querySelectorAll(
-                    ".note-grid > div"
-                );
+                ":scope > div > div"
+            );
 
                 if (noteBoxes.length === 9) {
                     noteBoxes[Number(number) - 1].textContent = "";
