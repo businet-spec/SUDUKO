@@ -224,6 +224,7 @@
     let solution = [];
         let difficulty = "medium";
         let notesMode = false;
+        let activeSudokuCell = null;
         let puzzleCounted = false;
 window.toggleNotes = function () {
     if (document.getElementById("board").classList.contains("locked")) {
@@ -239,6 +240,9 @@ window.toggleNotes = function () {
     } else {
         button.textContent = "Notes: OFF";
     }
+    if (activeSudokuCell && activeSudokuCell.isConnected) {
+    activeSudokuCell.focus();
+}
 }
 
     function shuffle(array) {
@@ -334,6 +338,9 @@ if (difficulty === "easy") {
 
                 const cell = document.createElement("div");
                 cell.className = "cell";
+                cell.addEventListener("focus", function () {
+                activeSudokuCell = cell;
+});
                 cell.addEventListener("click", function () {
             if (document.getElementById("board").classList.contains("locked")) {
             alert("Please log in or register to play the game.");
@@ -443,9 +450,11 @@ cell.dataset.notes = "";
         cell.style.lineHeight = "";
         cell.style.color = "";
 
-        if (Number(key) !== solution[row][col]) {
-            cell.style.color = "red";
-        }
+       if (Number(key) !== solution[row][col]) {
+    cell.style.color = "red";
+} else {
+    removeMatchingNotes(row, col, key);
+}
     }
 });                }
 
@@ -454,6 +463,37 @@ cell.dataset.notes = "";
         }
     }
 
+    function removeMatchingNotes(row, col, number) {
+    const cells = document.querySelectorAll("#board .cell");
+
+    cells.forEach(function (cell, index) {
+        const r = Math.floor(index / 9);
+        const c = index % 9;
+
+        const sameRow = r === row;
+        const sameColumn = c === col;
+        const sameBlock =
+            Math.floor(r / 3) === Math.floor(row / 3) &&
+            Math.floor(c / 3) === Math.floor(col / 3);
+
+        if (sameRow || sameColumn || sameBlock) {
+            const notes = cell.dataset.notes || "";
+            const updated = notes.replace(String(number), "");
+
+            if (updated !== notes) {
+                cell.dataset.notes = updated;
+
+                const noteBoxes = cell.querySelectorAll(
+                    ".note-grid > div"
+                );
+
+                if (noteBoxes.length === 9) {
+                    noteBoxes[Number(number) - 1].textContent = "";
+                }
+            }
+        }
+    });
+}
    window.newGame = function () {
     if (document.getElementById("board").classList.contains("locked")) {
         alert("Please log in or register to play the game.");
