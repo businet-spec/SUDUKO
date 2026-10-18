@@ -354,10 +354,19 @@ if (difficulty === "easy") {
         savedAt: Date.now()
     };
 }
-    function createBoard() {
-        puzzleCounted = false;
-        const puzzle = generatePuzzle();
-        originalPuzzle = puzzle.map(row => [...row]);
+    function createBoard(savedGame = null) {
+    puzzleCounted = false;
+
+    const puzzle = savedGame
+        ? savedGame.originalPuzzle.map(row => row.split("").map(Number))
+        : generatePuzzle();
+
+    if (savedGame) {
+        solution = savedGame.solution.map(row => row.split("").map(Number));
+        difficulty = savedGame.difficulty;
+    }
+
+    originalPuzzle = puzzle.map(row => [...row]);
         const board = document.getElementById("board");
 
         board.innerHTML = "";
