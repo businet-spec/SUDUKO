@@ -343,8 +343,8 @@ if (difficulty === "easy") {
     const cells = document.querySelectorAll("#board .cell");
 
     return {
-        originalPuzzle: originalPuzzle,
-        solution: solution,
+        originalPuzzle: originalPuzzle.map(row => [...row].join("")),
+        solution: solution.map(row => [...row].join("")),
         difficulty: difficulty,
         entries: Array.from(cells, cell =>
     cell.classList.contains("given") ? "" :
