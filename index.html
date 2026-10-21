@@ -646,7 +646,11 @@ window.checkPuzzle = function () {
 } else {
     if (!puzzleCounted) {
         puzzleCounted = true;
-        alert("Congratulations. Puzzle completed.");
+        const message = document.createElement("div");
+        message.textContent = "Congratulations. Puzzle completed.";
+        message.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;color:green;padding:25px 35px;border:2px solid green;border-radius:12px;font-size:24px;font-weight:bold;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.25);z-index:9999;";
+        document.body.appendChild(message);
+        setTimeout(() => message.remove(), 4000);
         saveGameStats();
     } else {
         alert("You have already completed this puzzle!");
