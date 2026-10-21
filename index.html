@@ -495,6 +495,19 @@ if (key === "Backspace" || key === "Delete") {
     cell.style.color = "red";
 } else {
     removeMatchingNotes(row, col, key);
+
+    // Check whether the entire puzzle is now correct
+    const allCells = document.querySelectorAll("#board .cell");
+
+    const completed = Array.from(allCells).every(function (c, index) {
+        const r = Math.floor(index / 9);
+        const column = index % 9;
+        return c.textContent.trim() === String(solution[r][column]);
+    });
+
+    if (completed && !puzzleCounted) {
+        window.checkPuzzle();
+    }
 }
     }
 });                }
