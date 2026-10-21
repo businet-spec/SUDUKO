@@ -695,6 +695,7 @@ window.checkPuzzle = function () {
     setDoc,
     getDoc,
     updateDoc,
+    deleteField,
     increment,
     serverTimestamp,
     collection,
@@ -819,6 +820,22 @@ window.saveUnfinishedGame = async function () {
         console.log("Unfinished puzzle saved.");
     } catch (error) {
         console.error("Error saving unfinished puzzle:", error);
+    }
+};
+window.clearUnfinishedGame = async function () {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+        const userRef = doc(db, "users", user.uid);
+
+        await updateDoc(userRef, {
+            unfinishedGame: deleteField()
+        });
+
+        console.log("Completed puzzle removed from unfinished games.");
+    } catch (error) {
+        console.error("Error clearing unfinished puzzle:", error);
     }
 };
 window.saveGameStats = async function () {
