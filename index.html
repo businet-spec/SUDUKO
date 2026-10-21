@@ -763,7 +763,31 @@ window.loginUser = async function () {
 
     await signInWithCustomToken(auth, result.data.token);
 
-    alert("Login successful!");
+    const loginMessage = document.createElement("div");
+loginMessage.textContent = "Login successful!";
+
+loginMessage.style.cssText = `
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #e8f5e9;
+    color: #1b5e20;
+    padding: 20px 35px;
+    border: 2px solid #4caf50;
+    border-radius: 12px;
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    z-index: 9999;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+`;
+
+document.body.appendChild(loginMessage);
+
+setTimeout(() => {
+    loginMessage.remove();
+}, 4000);
   } catch (error) {
     alert(error.message);
   }
