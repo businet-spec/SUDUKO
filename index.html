@@ -782,12 +782,16 @@ loginMessage.style.cssText = `
     z-index: 9999;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 `;
-
 document.body.appendChild(loginMessage);
+loginMessage.style.cursor = "pointer";
+loginMessage.title = "Click to close this message";
+loginMessage.addEventListener("click", () => {
+loginMessage.remove();
+});
 
 setTimeout(() => {
     loginMessage.remove();
-}, 4000);
+}, 60000);
   } catch (error) {
     alert(error.message);
   }
