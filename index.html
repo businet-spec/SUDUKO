@@ -652,6 +652,7 @@ window.checkPuzzle = function () {
         document.body.appendChild(message);
         setTimeout(() => message.remove(), 4000);
         saveGameStats();
+        window.clearUnfinishedGame();
     } else {
         alert("You have already completed this puzzle!");
     }
