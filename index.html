@@ -740,7 +740,6 @@ window.createAccount = async function () {
     });
 
     await signInWithCustomToken(auth, result.data.token);
-
     alert("Account created successfully!");
   } catch (error) {
     alert(error.message);
@@ -762,7 +761,8 @@ window.loginUser = async function () {
     });
 
     await signInWithCustomToken(auth, result.data.token);
-
+    document.getElementById("userId").value = "";
+    document.getElementById("password").value = "";
     const loginMessage = document.createElement("div");
 loginMessage.textContent = "Login successful!";
 
