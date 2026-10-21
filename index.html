@@ -633,7 +633,11 @@ window.checkPuzzle = function () {
 } else {
     if (!puzzleCounted) {
         puzzleCounted = true;
-        alert("O G rakkh o jawana!  Puzzle completed");
+        alert("O G rakkh o jawana!  Zabardast");
+        const speech = new SpeechSynthesisUtterance("O G rakkh o jawana!. Zabardast");
+        speech.lang = "pa-IN";
+        speech.rate = 0.85;
+        window.speechSynthesis.speak(speech);
         saveGameStats();
     } else {
         alert("You have already completed this puzzle!");
