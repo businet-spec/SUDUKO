@@ -520,7 +520,33 @@ if (key === "Backspace" || key === "Delete") {
                     : "red";
             } else if (notes) {
                 cell.dataset.notes = notes;
-                cell.textContent = notes;
+
+                const noteGrid = document.createElement("div");
+                noteGrid.style.display = "grid";
+                noteGrid.style.gridTemplateColumns = "repeat(3, 1fr)";
+                noteGrid.style.gridTemplateRows = "repeat(3, 1fr)";
+                noteGrid.style.width = "100%";
+                noteGrid.style.height = "100%";
+                noteGrid.style.fontSize = "10px";
+                noteGrid.style.lineHeight = "1";
+                noteGrid.style.color = "green";
+
+for (let n = 1; n <= 9; n++) {
+    const note = document.createElement("div");
+
+    note.style.gridColumn = ((n - 1) % 3) + 1;
+    note.style.gridRow = Math.floor((n - 1) / 3) + 1;
+    note.style.display = "flex";
+    note.style.alignItems = "center";
+    note.style.justifyContent = "center";
+
+    note.textContent = notes.includes(String(n)) ? n : "";
+
+    noteGrid.appendChild(note);
+}
+
+cell.innerHTML = "";
+cell.appendChild(noteGrid);
             }
         });
     }
