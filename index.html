@@ -276,7 +276,7 @@
         let puzzleCounted = false;
 window.toggleNotes = function () {
     if (document.getElementById("board").classList.contains("locked")) {
-    alert("Please log in or register to play the game.");
+    window.showGameMessage("Please log in or register to play the game.");
     return;
 }
     notesMode = !notesMode;
