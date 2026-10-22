@@ -830,28 +830,31 @@ setTimeout(() => {
   }
 };        
 window.forgotUserId = async function () {
-    const email = prompt("Enter the email address you used when you registered:");
+    const email = prompt(
+        "Enter the email address you used when you registered:"
+    );
 
-    if (!email) {
+    if (!email || !email.trim()) {
         return;
     }
 
     try {
-        const usersRef = collection(db, "users");
-        const q = query(usersRef, where("email", "==", email.trim()));
-        const querySnapshot = await getDocs(q);
+        const recoverUserId = httpsCallable(
+            functions,
+            "recoverSudokuUserId"
+        );
 
-        if (querySnapshot.empty) {
-            window.showGameMessage("No account was found with that email address.");
-            return;
-        }
+        const result = await recoverUserId({
+            email: email.trim()
+        });
 
-        const userData = querySnapshot.docs[0].data();
-
-        alert("Your User ID is: " + userData.userId);
+        window.showGameMessage(result.data.message);
 
     } catch (error) {
-        alert(error.message);
+        window.showGameMessage(
+            "Unable to process your request. Please try again later."
+        );
+        console.error("User ID recovery error:", error);
     }
 };
     window.logoutUser = async function () {
