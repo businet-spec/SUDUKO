@@ -827,7 +827,7 @@ setTimeout(() => {
     loginMessage.remove();
 }, 60000);
   } catch (error) {
-    alert(error.message);
+   window.showGameMessage(error.message);
   }
 };        
 window.forgotUserId = async function () {
