@@ -843,7 +843,7 @@ window.forgotUserId = async function () {
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
-            alert("No account was found with that email address.");
+            window.showGameMessage("No account was found with that email address.");
             return;
         }
 
