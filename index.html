@@ -762,7 +762,7 @@ window.createAccount = async function () {
   const password = document.getElementById("password").value;
 
   if (!userId || !email || !password) {
-    alert("Please enter your User ID, email, and password.");
+    window.showGameMessage("Please enter your User ID, email, and password.");
     return;
   }
 
