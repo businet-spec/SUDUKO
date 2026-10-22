@@ -784,7 +784,7 @@ window.loginUser = async function () {
   const password = document.getElementById("password").value;
 
   if (!userId || !password) {
-    alert("Please enter your User ID and password.");
+    window.showGameMessage("Please enter your User ID and password.");
     return;
   }
 
