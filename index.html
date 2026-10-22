@@ -676,7 +676,7 @@ window.checkPuzzle = function () {
     if (mistakes > 0) {
         window.showGameMessage("There are " + mistakes + " mistake(s).");
     } else if (empty > 0) {
-        alert("So far, so good! There are " + empty + " empty cell(s) remaining.");
+        window.showGameMessage("So far, so good! There are " + empty + " empty cell(s) remaining.");
 } else {
     if (!puzzleCounted) {
         puzzleCounted = true;
