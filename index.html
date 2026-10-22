@@ -415,7 +415,7 @@ if (difficulty === "easy") {
 });
                 cell.addEventListener("click", function () {
             if (document.getElementById("board").classList.contains("locked")) {
-            alert("Please log in or register to play the game.");
+            window.showGameMessage("Please log in or register to play the game.");
     }
 });
                 if (puzzle[row][col] !== 0) {
