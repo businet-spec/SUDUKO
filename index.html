@@ -632,7 +632,7 @@ cell.appendChild(noteGrid);
 }
    window.newGame = function () {
     if (document.getElementById("board").classList.contains("locked")) {
-        alert("Please log in or register to play the game.");
+        window.showGameMessage("Please log in or register to play the game.");
     return;
 }
         createBoard();
