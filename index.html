@@ -857,6 +857,34 @@ window.forgotUserId = function () {
 window.closePasswordRecovery = function () {
   document.getElementById("forgotPasswordModal").style.display = "none";
 };
+    window.submitPasswordRecovery = async function () {
+  const email = document.getElementById("passwordRecoveryEmail").value.trim();
+
+  if (!email) {
+    window.showGameMessage("Please enter your registered email address.");
+    return;
+  }
+
+  try {
+    await sendPasswordResetEmail(auth, email);
+
+    document.getElementById("forgotPasswordModal").style.display = "none";
+
+    window.showGameMessage(
+      "If this email address is registered with Sudoku Lahori, " +
+      "a password-reset link will be sent."
+    );
+  } catch (error) {
+    if (error.code === "auth/invalid-email") {
+      window.showGameMessage("Please enter a valid email address.");
+    } else {
+      console.error("Password recovery error:", error.code);
+      window.showGameMessage(
+        "Unable to send the password-reset email. Please try again later."
+      );
+    }
+  }
+};
     window.closeUserIdRecovery = function () {
   document.getElementById("forgotUserIdModal").style.display = "none";
 };
