@@ -847,6 +847,14 @@ window.forgotUserId = function () {
   document.getElementById("recoveryEmail").value = "";
   document.getElementById("forgotUserIdModal").style.display = "flex";
 };
+  window.forgotPassword = function () {
+  document.getElementById("passwordRecoveryEmail").value = "";
+  document.getElementById("forgotPasswordModal").style.display = "flex";
+};
+
+window.closePasswordRecovery = function () {
+  document.getElementById("forgotPasswordModal").style.display = "none";
+};
     window.closeUserIdRecovery = function () {
   document.getElementById("forgotUserIdModal").style.display = "none";
 };
