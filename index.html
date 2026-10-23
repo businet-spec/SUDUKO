@@ -829,33 +829,34 @@ setTimeout(() => {
    window.showGameMessage(error.message);
   }
 };        
-window.forgotUserId = async function () {
-    const email = prompt(
-        "Enter the email address you used when you registered:"
+window.forgotUserId = function () {
+  document.getElementById("recoveryEmail").value = "";
+  document.getElementById("forgotUserIdModal").style.display = "flex";
+};
+    window.closeUserIdRecovery = function () {
+  document.getElementById("forgotUserIdModal").style.display = "none";
+};
+
+window.submitUserIdRecovery = async function () {
+  const email = document.getElementById("recoveryEmail").value.trim();
+
+  if (!email) {
+    window.showGameMessage("Please enter your registered email address.");
+    return;
+  }
+
+  document.getElementById("forgotUserIdModal").style.display = "none";
+
+  try {
+    const recoverUserId = httpsCallable(functions, "recoverSudokuUserId");
+    const result = await recoverUserId({ email: email });
+    window.showGameMessage(result.data.message);
+  } catch (error) {
+    window.showGameMessage(
+      "Unable to process your request. Please try again later."
     );
-
-    if (!email || !email.trim()) {
-        return;
-    }
-
-    try {
-        const recoverUserId = httpsCallable(
-            functions,
-            "recoverSudokuUserId"
-        );
-
-        const result = await recoverUserId({
-            email: email.trim()
-        });
-
-        window.showGameMessage(result.data.message);
-
-    } catch (error) {
-        window.showGameMessage(
-            "Unable to process your request. Please try again later."
-        );
-        console.error("User ID recovery error:", error);
-    }
+    console.error("User ID recovery error:", error);
+  }
 };
     window.logoutUser = async function () {
         try {
@@ -949,5 +950,52 @@ status.textContent = userSnap.exists()
         }
     });
 </script>
+    <div id="forgotUserIdModal" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.55);
+  z-index:10000;
+  align-items:center;
+  justify-content:center;
+">
+  <div style="
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    width:90%;
+    max-width:380px;
+    text-align:center;
+    box-shadow:0 5px 25px rgba(0,0,0,0.3);
+  ">
+    <h2>Sudoku Lahori</h2>
+    <h3>Forgot User ID?</h3>
+
+    <p>Enter the email address used during registration.</p>
+
+    <input
+      type="email"
+      id="recoveryEmail"
+      placeholder="Your registered email"
+      autocomplete="email"
+      style="
+        width:100%;
+        box-sizing:border-box;
+        padding:12px;
+        margin-bottom:18px;
+        border:1px solid #aaa;
+        border-radius:6px;
+      "
+    >
+
+    <button type="button" onclick="submitUserIdRecovery()">
+      Submit
+    </button>
+
+    <button type="button" onclick="closeUserIdRecovery()">
+      Cancel
+    </button>
+  </div>
+</div>
 </body>
 </html> 
