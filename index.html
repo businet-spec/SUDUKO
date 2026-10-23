@@ -99,9 +99,19 @@
 <div id="authBox">
     <h3>User Account</h3>
 <p>New players: Register with User ID, email, and password. Existing players: Log in with User ID and password only.</p>
-    <input type="text" id="userId" placeholder="Enter User ID">
-      <button onclick="forgotUserId()">Forgot User ID?</button>
-    <br><br>
+<input type="text" id="userId" placeholder="Enter User ID">
+
+<div style="margin-top:5px;">
+  <button type="button" onclick="forgotUserId()"
+    style="font-size:12px; padding:3px 8px;
+           background:none; border:none;
+           color:#0066cc; cursor:pointer;
+           text-decoration:underline;">
+    Forgot User ID?
+  </button>
+</div>
+    
+<br>
 
     <input type="email" id="email" placeholder="Enter email to register only">
     <input type="password" id="password" placeholder="Enter Password">
