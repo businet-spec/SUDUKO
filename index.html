@@ -1011,5 +1011,52 @@ status.textContent = userSnap.exists()
     </button>
   </div>
 </div>
+    <div id="forgotPasswordModal" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.55);
+  z-index:10001;
+  align-items:center;
+  justify-content:center;
+">
+  <div style="
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    width:90%;
+    max-width:380px;
+    text-align:center;
+    box-shadow:0 5px 25px rgba(0,0,0,0.3);
+  ">
+    <h2>Sudoku Lahori</h2>
+    <h3>Forgot Password?</h3>
+
+    <p>Enter your registered email address to receive a password-reset link.</p>
+
+    <input
+      type="email"
+      id="passwordRecoveryEmail"
+      placeholder="Your registered email"
+      autocomplete="email"
+      style="
+        width:100%;
+        box-sizing:border-box;
+        padding:12px;
+        margin-bottom:18px;
+        border:1px solid #aaa;
+        border-radius:6px;
+      "
+    >
+
+    <button type="button" onclick="submitPasswordRecovery()">
+      Submit
+    </button>
+
+    <button type="button" onclick="closePasswordRecovery()">
+      Cancel
+    </button>
+  </div>
+</div>
 </body>
 </html> 
