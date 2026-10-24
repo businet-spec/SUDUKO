@@ -291,6 +291,49 @@
         let originalPuzzle = [];
         let saveTimer = null;
         let currentPlayerId = null;
+        let gameTimerInterval = null;
+        let gameStartTime = null;
+        let elapsedSeconds = 0;
+        
+function updateGameTimerDisplay() {
+    const minutes = Math.floor(elapsedSeconds / 60);
+    const seconds = elapsedSeconds % 60;
+
+    document.getElementById("timer").textContent =
+        "Time: " +
+        String(minutes).padStart(2, "0") + ":" +
+        String(seconds).padStart(2, "0");
+}
+
+function startGameTimer(savedSeconds = 0) {
+    clearInterval(gameTimerInterval);
+
+    elapsedSeconds = savedSeconds;
+    gameStartTime = Date.now() - (savedSeconds * 1000);
+
+    updateGameTimerDisplay();
+
+    gameTimerInterval = setInterval(function () {
+        elapsedSeconds = Math.floor(
+            (Date.now() - gameStartTime) / 1000
+        );
+        updateGameTimerDisplay();
+    }, 1000);
+}
+
+function stopGameTimer() {
+    clearInterval(gameTimerInterval);
+    gameTimerInterval = null;
+
+    if (gameStartTime !== null) {
+        elapsedSeconds = Math.floor(
+            (Date.now() - gameStartTime) / 1000
+        );
+        updateGameTimerDisplay();
+        gameStartTime = null;
+    }
+}
+
         function scheduleGameSave() {
     if (!currentPlayerId || puzzleCounted) {
         return;
@@ -451,7 +494,12 @@ if (difficulty === "easy") {
     (cell.querySelector(":scope > div > div") ? "" : cell.textContent.trim())
 ),
         notes: Array.from(cells, cell => cell.dataset.notes || ""),
-        savedAt: Date.now()
+        
+        savedAt: Date.now(),
+        elapsedSeconds: gameStartTime === null
+        ? elapsedSeconds
+        : Math.floor((Date.now() - gameStartTime) / 1000)
+
     };
 }
     function createBoard(savedGame = null) {
@@ -663,6 +711,7 @@ cell.appendChild(noteGrid);
             }
         });
     }
+            startGameTimer(savedGame?.elapsedSeconds ?? 0);
 }
 
     function removeMatchingNotes(row, col, number) {
@@ -746,6 +795,7 @@ window.checkPuzzle = function () {
 } else {
     if (!puzzleCounted) {
         puzzleCounted = true;
+        stopGameTimer();
         const message = document.createElement("div");
         message.textContent = "Congratulations. Puzzle completed.";
         message.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;color:green;padding:25px 35px;border:2px solid green;border-radius:12px;font-size:24px;font-weight:bold;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.25);z-index:9999;";
@@ -962,9 +1012,19 @@ window.submitUserIdRecovery = async function () {
     console.error("User ID recovery error:", error);
   }
 };
-    window.logoutUser = async function () {
-        try {
-            await signOut(auth);
+    
+window.logoutUser = async function () {
+    try {
+        if (auth.currentUser && !puzzleCounted &&
+            !document.getElementById("board").classList.contains("locked")) {
+            stopGameTimer();
+            await window.saveUnfinishedGame();
+        } else {
+            stopGameTimer();
+        }
+
+        await signOut(auth);
+
             document.getElementById("userId").value = "";
             document.getElementById("email").value = "";
             document.getElementById("password").value = "";
@@ -1032,6 +1092,9 @@ window.saveGameStats = async function () {
 };
     onAuthStateChanged(auth, async (user) => {
         currentPlayerId = user ? user.uid : null;
+        if (!user) {
+            stopGameTimer();
+        }
         const status = document.getElementById("userStatus");
         const board = document.getElementById("board");
         board.classList.toggle("locked", !user);
