@@ -97,37 +97,89 @@
 
 <body>
 <div id="authBox">
-    <h3>User Account</h3>
-<p>New players: Register with User ID, email, and password. Existing players: Log in with User ID and password only.</p>
-<input type="text" id="userId" placeholder="Enter User ID">
 
-<div style="margin-top:5px;">
-  <button type="button" onclick="forgotUserId()"
-    style="font-size:12px; padding:3px 8px;
-           background:none; border:none;
-           color:#0066cc; cursor:pointer;
-           text-decoration:underline;">
-    Forgot User ID?
-  </button>
+<div style="max-width:380px; margin:20px auto; padding:25px;
+            background:white; border-radius:12px;
+            box-shadow:0 4px 18px rgba(0,0,0,0.12);
+            text-align:center;">
+
+  <h2 style="margin-top:0;">Sudoku Lahori</h2>
+  <h3>User Account</h3>
+
+  <p style="font-size:14px; color:#555;">
+    Register with email, or log in using your User ID.
+  </p>
+
+  <div style="max-width:300px; margin:auto;">
+
+    <input type="text" id="userId"
+           placeholder="User ID"
+           style="width:100%; box-sizing:border-box;
+                  padding:12px; margin-top:10px;
+                  border:1px solid #aaa; border-radius:6px;">
+
+    <div style="text-align:right; margin:6px 0 16px;">
+      <button type="button" onclick="forgotUserId()"
+              style="border:none; background:none; padding:0;
+                     color:#0066cc; font-size:13px;
+                     text-decoration:underline; cursor:pointer;">
+        Forgot User ID?
+      </button>
+    </div>
+
+    <input type="email" id="email"
+           placeholder="Email (registration only)"
+           style="width:100%; box-sizing:border-box;
+                  padding:12px; margin-bottom:12px;
+                  border:1px solid #aaa; border-radius:6px;">
+
+    <input type="password" id="password"
+           placeholder="Password"
+           style="width:100%; box-sizing:border-box;
+                  padding:12px;
+                  border:1px solid #aaa; border-radius:6px;">
+
+    <div style="text-align:right; margin:6px 0 18px;">
+      <a href="#"
+         onclick="window.forgotPassword(); return false;"
+         style="font-size:13px; color:#0066cc;
+                text-decoration:underline;">
+        Forgot Password?
+      </a>
+    </div>
+
+    <div style="display:flex; gap:10px;">
+      <button onclick="createAccount()"
+              style="flex:1; padding:12px 5px;
+                     background:#1769aa; color:white;
+                     border:none; border-radius:6px;
+                     cursor:pointer;">
+        Create Account
+      </button>
+
+      <button onclick="loginUser()"
+              style="flex:1; padding:12px 5px;
+                     background:#167347; color:white;
+                     border:none; border-radius:6px;
+                     cursor:pointer;">
+        Login
+      </button>
+    </div>
+
+    <button onclick="logoutUser()"
+            style="margin-top:14px; padding:9px 20px;
+                   background:#eee; color:#333;
+                   border:1px solid #ccc; border-radius:6px;
+                   cursor:pointer;">
+      Logout
+    </button>
+
+    <p id="userStatus" style="margin-top:18px; font-size:14px;">
+      Not signed in
+    </p>
+
+  </div>
 </div>
-    
-<br>
-
-    <input type="email" id="email" placeholder="Enter email to register only">
-    <input type="password" id="password" placeholder="Enter Password">
-<br>
-<a href="#" onclick="window.forgotPassword(); return false;"
-   style="display:inline-block; margin-left:220px;
-          font-size:13px; color:#0066cc; text-decoration:underline;">
-  Forgot Password?
-</a>
-    <br><br>
-
-    <button onclick="createAccount()">Create Account</button>
-    <button onclick="loginUser()">Login</button>
-    <button onclick="logoutUser()">Logout</button>
-
-    <p id="userStatus">Not signed in</p>
 </div>
 
 <hr>
