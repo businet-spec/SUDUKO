@@ -1024,7 +1024,9 @@ window.logoutUser = async function () {
         }
 
         await signOut(auth);
-
+        elapsedSeconds = 0;
+        gameStartTime = null;
+        updateGameTimerDisplay();
             document.getElementById("userId").value = "";
             document.getElementById("email").value = "";
             document.getElementById("password").value = "";
@@ -1107,6 +1109,11 @@ const userSnap = await getDoc(userRef);
 if (userSnap.exists() && userSnap.data().unfinishedGame) {
     console.log("Unfinished puzzle found in Firebase.");
     createBoard(userSnap.data().unfinishedGame);
+} else {
+    stopGameTimer();
+    elapsedSeconds = 0;
+    gameStartTime = null;
+    updateGameTimerDisplay();
 }
 
 status.textContent = userSnap.exists()
