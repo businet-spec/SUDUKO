@@ -712,6 +712,9 @@ cell.appendChild(noteGrid);
         });
     }
             startGameTimer(savedGame?.elapsedSeconds ?? 0);
+            if (!savedGame && typeof window.recordGamePlayed === "function") {
+               window.recordGamePlayed(difficulty);
+}
 }
 
     function removeMatchingNotes(row, col, number) {
@@ -1091,6 +1094,22 @@ window.saveGameStats = async function () {
     } catch (error) {
         console.error("Error saving statistics:", error);
         alert("The puzzle was solved, but the statistics could not be saved.");
+    }
+};
+    window.recordGamePlayed = async function (level) {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+        const userRef = doc(db, "users", user.uid);
+
+        await updateDoc(userRef, {
+            gamesPlayed: increment(1)
+        });
+
+        console.log("Games Played updated:", level);
+    } catch (error) {
+        console.error("Error recording Games Played:", error);
     }
 };
     onAuthStateChanged(auth, async (user) => {
