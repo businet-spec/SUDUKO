@@ -1027,6 +1027,7 @@ window.logoutUser = async function () {
         elapsedSeconds = 0;
         gameStartTime = null;
         updateGameTimerDisplay();
+        document.getElementById("board").innerHTML = "";
             document.getElementById("userId").value = "";
             document.getElementById("email").value = "";
             document.getElementById("password").value = "";
