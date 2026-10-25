@@ -1089,7 +1089,9 @@ window.saveGameStats = async function () {
   puzzlesSolved: increment(1),
   lastPlayed: serverTimestamp()
 });
-
+await updateDoc(userRef, {
+    gamesWon: increment(1)
+});
         console.log("Game statistics saved.");
     } catch (error) {
         console.error("Error saving statistics:", error);
