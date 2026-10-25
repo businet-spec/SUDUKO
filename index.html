@@ -383,6 +383,7 @@ function stopGameTimer() {
         let notesMode = false;
         let activeSudokuCell = null;
         let puzzleCounted = false;
+        let mistakesMade = 0;
 window.toggleNotes = function () {
     if (document.getElementById("board").classList.contains("locked")) {
     window.showGameMessage("Please log in or register to play the game.");
@@ -496,6 +497,7 @@ if (difficulty === "easy") {
         notes: Array.from(cells, cell => cell.dataset.notes || ""),
         
         savedAt: Date.now(),
+        mistakesMade: mistakesMade,
         elapsedSeconds: gameStartTime === null
         ? elapsedSeconds
         : Math.floor((Date.now() - gameStartTime) / 1000)
@@ -504,7 +506,11 @@ if (difficulty === "easy") {
 }
     function createBoard(savedGame = null) {
     puzzleCounted = false;
-
+    if (savedGame) {
+    mistakesMade = savedGame.mistakesMade ?? 0;
+} else {
+    mistakesMade = 0;
+}
     const puzzle = savedGame
         ? savedGame.originalPuzzle.map(row => row.split("").map(Number))
         : generatePuzzle();
@@ -640,7 +646,8 @@ if (key === "Backspace" || key === "Delete") {
         cell.style.color = "";
 
        if (Number(key) !== solution[row][col]) {
-    cell.style.color = "red";
+           mistakesMade++;
+           cell.style.color = "red";
 } else {
     removeMatchingNotes(row, col, key);
 
@@ -802,7 +809,18 @@ window.checkPuzzle = function () {
         saveTimer = null;
         stopGameTimer();
         const message = document.createElement("div");
-        message.textContent = "Congratulations. Puzzle completed.";
+        const minutes = Math.floor(elapsedSeconds / 60);
+        const seconds = elapsedSeconds % 60;
+
+        const completionTime =
+        String(minutes).padStart(2, "0") + ":" +
+        String(seconds).padStart(2, "0");
+
+    message.innerHTML =
+    "🎉 Congratulations!<br><br>" +
+    "You completed the " + difficulty.toUpperCase() + " puzzle!<br><br>" +
+    "Time: " + completionTime + "<br>" +
+    "Mistakes made: " + mistakesMade;
         message.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;color:green;padding:25px 35px;border:2px solid green;border-radius:12px;font-size:24px;font-weight:bold;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.25);z-index:9999;";
         document.body.appendChild(message);
         setTimeout(() => message.remove(), 4000);
