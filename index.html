@@ -798,6 +798,8 @@ window.checkPuzzle = function () {
 } else {
     if (!puzzleCounted) {
         puzzleCounted = true;
+        clearTimeout(saveTimer);
+        saveTimer = null;
         stopGameTimer();
         const message = document.createElement("div");
         message.textContent = "Congratulations. Puzzle completed.";
@@ -1040,7 +1042,9 @@ window.logoutUser = async function () {
     };
 window.saveUnfinishedGame = async function () {
     const user = auth.currentUser;
-
+    if (puzzleCounted) {
+    return;
+}
     if (!user) {
         return;
     }
