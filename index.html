@@ -657,7 +657,8 @@ if (key === "Backspace" || key === "Delete") {
     const completed = Array.from(allCells).every(function (c, index) {
         const r = Math.floor(index / 9);
         const column = index % 9;
-        return c.textContent.trim() === String(solution[r][column]);
+        return !c.querySelector(":scope > div") &&
+       c.textContent.trim() === String(solution[r][column]);
     });
 
     if (completed && !puzzleCounted) {
@@ -787,7 +788,7 @@ window.checkPuzzle = function () {
         if (!cell.classList.contains("given")) {
             const value = cell.textContent.trim();
 
-            if (value === "") {
+            if (value === "" || cell.querySelector(":scope > div")) {
                 empty++;
             } else if (Number(value) !== solution[row][col]) {
                 cell.style.color = "red";
