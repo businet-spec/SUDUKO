@@ -825,7 +825,7 @@ window.checkPuzzle = function () {
         message.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;color:green;padding:25px 35px;border:2px solid green;border-radius:12px;font-size:24px;font-weight:bold;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.25);z-index:9999;";
         document.body.appendChild(message);
         setTimeout(() => message.remove(), 4000);
-        saveGameStats();
+        window.saveGameStats(elapsedSeconds, difficulty);
         window.clearUnfinishedGame();
     } else {
         window.showGameMessage("You have already completed this puzzle!");
@@ -874,6 +874,7 @@ window.checkPuzzle = function () {
     deleteField,
     increment,
     serverTimestamp,
+    runTransaction,
     collection,
     query,
     where,
@@ -1097,7 +1098,7 @@ window.clearUnfinishedGame = async function () {
         console.error("Error clearing unfinished puzzle:", error);
     }
 };
-window.saveGameStats = async function () {
+window.saveGameStats = async function (completionSeconds, completedDifficulty) {
     const user = auth.currentUser;
 
     if (!user) {
@@ -1107,13 +1108,32 @@ window.saveGameStats = async function () {
 
     try {
         const userRef = doc(db, "users", user.uid);
+        const difficultyKey = completedDifficulty.toLowerCase();
+        const bestTimeField =
+       "bestTime" + difficultyKey.charAt(0).toUpperCase() +
+        difficultyKey.slice(1);
+ await runTransaction(db, async (transaction) => {
+    const userSnapshot = await transaction.get(userRef);
+    const userData = userSnapshot.data() || {};
 
- await updateDoc(userRef, {
-  puzzlesSolved: increment(1),
-  lastPlayed: serverTimestamp()
-});
-await updateDoc(userRef, {
-    gamesWon: increment(1)
+    const previousBest = userData[bestTimeField];
+
+    const updates = {
+        puzzlesSolved: increment(1),
+        gamesWon: increment(1),
+        lastPlayed: serverTimestamp()
+    };
+
+    if (
+        Number.isInteger(completionSeconds) &&
+        completionSeconds >= 0 &&
+        (typeof previousBest !== "number" ||
+         completionSeconds < previousBest)
+    ) {
+        updates[bestTimeField] = completionSeconds;
+    }
+
+    transaction.update(userRef, updates);
 });
         console.log("Game statistics saved.");
     } catch (error) {
