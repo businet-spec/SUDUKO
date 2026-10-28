@@ -177,7 +177,9 @@
     <p id="userStatus" style="margin-top:18px; font-size:14px;">
       Not signed in
     </p>
-
+    <p id="winPercentage" style="margin-top:8px; font-size:14px;">
+    Win Percentage: --
+</p>
   </div>
 </div>
 </div>
@@ -1173,6 +1175,16 @@ window.saveGameStats = async function (completionSeconds, completedDifficulty) {
         if (user) {
             const userRef = doc(db, "users", user.uid);
 const userSnap = await getDoc(userRef);
+const playerData = userSnap.exists() ? userSnap.data() : {};
+const gamesStarted = playerData.trackedGamesStarted || 0;
+const gamesWon = playerData.trackedGamesWon || 0;
+
+const winPercentage = gamesStarted > 0
+    ? ((gamesWon / gamesStarted) * 100).toFixed(2) + "%"
+    : "N/A";
+
+document.getElementById("winPercentage").textContent =
+    "Win Percentage: " + winPercentage;
 if (userSnap.exists() && userSnap.data().unfinishedGame) {
     console.log("Unfinished puzzle found in Firebase.");
     createBoard(userSnap.data().unfinishedGame);
@@ -1188,6 +1200,8 @@ status.textContent = userSnap.exists()
   : "Signed in";
         } else {
             status.textContent = "Not signed in";
+            document.getElementById("winPercentage").textContent =
+                "Win Percentage: --";
         }
     });
 </script>
