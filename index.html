@@ -1138,6 +1138,18 @@ window.saveGameStats = async function (completionSeconds, completedDifficulty) {
 
     transaction.update(userRef, updates);
 });
+        const updatedSnap = await getDoc(userRef);
+        const updatedData = updatedSnap.data() || {};
+
+        const started = updatedData.trackedGamesStarted || 0;
+        const won = updatedData.trackedGamesWon || 0;
+
+        const percentage = started > 0
+    ? ((won / started) * 100).toFixed(2) + "%"
+    : "N/A";
+
+document.getElementById("winPercentage").textContent =
+    "Win Percentage: " + percentage;
         console.log("Game statistics saved.");
     } catch (error) {
         console.error("Error saving statistics:", error);
@@ -1155,7 +1167,18 @@ window.saveGameStats = async function (completionSeconds, completedDifficulty) {
         gamesPlayed: increment(1),
         trackedGamesStarted: increment(1)
         });
+    const updatedSnap = await getDoc(userRef);
+    const updatedData = updatedSnap.data() || {};
 
+    const started = updatedData.trackedGamesStarted || 0;
+    const won = updatedData.trackedGamesWon || 0;
+
+    const percentage = started > 0
+    ? ((won / started) * 100).toFixed(2) + "%"
+    : "N/A";
+
+    document.getElementById("winPercentage").textContent =
+    "Win Percentage: " + percentage;
         console.log("Games Played updated:", level);
     } catch (error) {
         console.error("Error recording Games Played:", error);
