@@ -180,6 +180,12 @@
     <p id="winPercentage" style="margin-top:8px; font-size:14px;">
     Win Percentage: --
 </p>
+      <div id="bestTimes" style="margin-top:12px; font-size:14px;">
+    <strong>My Best Completion Times</strong><br>
+    Easy: --<br>
+    Medium: --<br>
+    Hard: --
+</div>
   </div>
 </div>
 </div>
@@ -1100,6 +1106,17 @@ window.clearUnfinishedGame = async function () {
         console.error("Error clearing unfinished puzzle:", error);
     }
 };
+function formatBestTime(seconds) {
+    if (!Number.isInteger(seconds) || seconds < 0) {
+        return "--";
+    }
+
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+
+    return String(minutes).padStart(2, "0") + ":" +
+           String(remainingSeconds).padStart(2, "0");
+}
 window.saveGameStats = async function (completionSeconds, completedDifficulty) {
     const user = auth.currentUser;
 
@@ -1199,6 +1216,11 @@ document.getElementById("winPercentage").textContent =
             const userRef = doc(db, "users", user.uid);
 const userSnap = await getDoc(userRef);
 const playerData = userSnap.exists() ? userSnap.data() : {};
+document.getElementById("bestTimes").innerHTML =
+    "<strong>My Best Completion Times</strong><br>" +
+    "Easy: " + formatBestTime(playerData.bestTimeEasy) + "<br>" +
+    "Medium: " + formatBestTime(playerData.bestTimeMedium) + "<br>" +
+    "Hard: " + formatBestTime(playerData.bestTimeHard);
 const gamesStarted = playerData.trackedGamesStarted || 0;
 const gamesWon = playerData.trackedGamesWon || 0;
 
@@ -1225,6 +1247,11 @@ status.textContent = userSnap.exists()
             status.textContent = "Not signed in";
             document.getElementById("winPercentage").textContent =
                 "Win Percentage: --";
+            document.getElementById("bestTimes").innerHTML =
+            "<strong>My Best Completion Times</strong><br>" +
+            "Easy: --<br>" +
+            "Medium: --<br>" +
+            "Hard: --";
         }
     });
 </script>
