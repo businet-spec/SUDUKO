@@ -1119,9 +1119,10 @@ window.saveGameStats = async function (completionSeconds, completedDifficulty) {
     const previousBest = userData[bestTimeField];
 
     const updates = {
-        puzzlesSolved: increment(1),
-        gamesWon: increment(1),
-        lastPlayed: serverTimestamp()
+    puzzlesSolved: increment(1),
+    gamesWon: increment(1),
+    trackedGamesWon: increment(1),
+    lastPlayed: serverTimestamp()
     };
 
     if (
@@ -1149,7 +1150,8 @@ window.saveGameStats = async function (completionSeconds, completedDifficulty) {
         const userRef = doc(db, "users", user.uid);
 
         await updateDoc(userRef, {
-            gamesPlayed: increment(1)
+        gamesPlayed: increment(1),
+        trackedGamesStarted: increment(1)
         });
 
         console.log("Games Played updated:", level);
