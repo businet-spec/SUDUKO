@@ -200,6 +200,7 @@
     <button onclick="setDifficulty('easy')">Easy</button>
     <button onclick="setDifficulty('medium')">Medium</button>
     <button onclick="setDifficulty('hard')">Hard</button>
+    <div id="gameLayout" style="display:flex; align-items:flex-start; gap:20px; flex-wrap:wrap;">
     <div id="board" class="locked">
 
         <div class="cell given">5</div>
@@ -292,7 +293,23 @@
         <div class="cell given">7</div>
         <div class="cell given">9</div>
 
+    </div>  <!-- Sudoku board ends -->
+
+    <div id="numberKeypad" style="display:grid; grid-template-columns:repeat(3, 55px); gap:8px; padding:10px;">
+        <button type="button" onclick="keypadNumber(1)">1</button>
+        <button type="button" onclick="keypadNumber(2)">2</button>
+        <button type="button" onclick="keypadNumber(3)">3</button>
+        <button type="button" onclick="keypadNumber(4)">4</button>
+        <button type="button" onclick="keypadNumber(5)">5</button>
+        <button type="button" onclick="keypadNumber(6)">6</button>
+        <button type="button" onclick="keypadNumber(7)">7</button>
+        <button type="button" onclick="keypadNumber(8)">8</button>
+        <button type="button" onclick="keypadNumber(9)">9</button>
+        <button type="button" onclick="keypadErase()">Erase</button>
+        <button type="button" onclick="toggleNotes()">Notes</button>
     </div>
+
+    </div>  <!-- gameLayout ends -->
 
     <script>
     let solution = [];
@@ -302,7 +319,35 @@
         let gameTimerInterval = null;
         let gameStartTime = null;
         let elapsedSeconds = 0;
-        
+function keypadNumber(number) {
+    if (!activeSudokuCell) {
+        window.showGameMessage("Please select a Sudoku cell first.");
+        return;
+    }
+
+    activeSudokuCell.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: String(number),
+            bubbles: true,
+            cancelable: true
+        })
+    );
+}
+
+function keypadErase() {
+    if (!activeSudokuCell) {
+        window.showGameMessage("Please select a Sudoku cell first.");
+        return;
+    }
+
+    activeSudokuCell.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "Backspace",
+            bubbles: true,
+            cancelable: true
+        })
+    );
+}
 function updateGameTimerDisplay() {
     const minutes = Math.floor(elapsedSeconds / 60);
     const seconds = elapsedSeconds % 60;
@@ -542,6 +587,7 @@ if (difficulty === "easy") {
                 activeSudokuCell = cell;
 });
                 cell.addEventListener("click", function () {
+                activeSudokuCell = cell;
             if (document.getElementById("board").classList.contains("locked")) {
             window.showGameMessage("Please log in or register to play the game.");
     }
